@@ -1,18 +1,21 @@
 package ocr.codeyourlife.com.ocrapp_android.service;
 
-import android.database.Observable;
-import ocr.codeyourlife.com.ocrapp_android.service.response.ImageTextResponse;
-import retrofit2.Call;
-import retrofit2.http.Field;
-import retrofit2.http.FormUrlEncoded;
-import retrofit2.http.POST;
+
+import ocr.codeyourlife.com.ocrapp_android.model.ImageTextResponse;
+
+
+import okhttp3.MultipartBody;
+import retrofit2.http.*;
+import rx.Observable;
 
 public interface OCRServiceInterface {
 
-    @FormUrlEncoded
+    @Multipart
     @POST("/processDocument")
-    Observable<ImageTextResponse> processImage(@Field("language") String language,
-                                               @Field("gettext") String gettext,
-                                               @Field("outputformat") String outputformat ) ;
+    Observable<ImageTextResponse> processImage(@Query("language") String language,
+                                               @Query("gettext") String gettext,
+                                               @Query("outputformat") String outputformat,
+                                               @Part MultipartBody.Part file
+                                               ) ;
 
 }
