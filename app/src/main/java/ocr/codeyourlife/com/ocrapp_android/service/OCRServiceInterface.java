@@ -11,7 +11,7 @@ import rx.Observable;
 public interface OCRServiceInterface {
 
     @Multipart
-    @POST("/processDocument")
+    @POST("restservices/processDocument")
     Observable<ImageTextResponse> processImage(@Query("language") String language,
                                                @Query("gettext") String gettext,
                                                @Query("outputformat") String outputformat,

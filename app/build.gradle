@@ -3,7 +3,7 @@ apply plugin: 'com.android.application'
 apply plugin: 'kotlin-android'
 
 apply plugin: 'kotlin-android-extensions'
-
+apply plugin: 'kotlin-kapt'
 android {
     compileSdkVersion 28
     defaultConfig {
@@ -15,7 +15,7 @@ android {
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
 
         //Default Configuration
-        buildConfigField "String", "BASEURL", "\"http://www.ocrwebservice.com/restservices/\""
+        buildConfigField "String", "BASEURL", "\"http://www.ocrwebservice.com/\""
 
     }
     buildTypes {
@@ -25,7 +25,10 @@ android {
         }
     }
 }
-
+ext
+        {
+            dagger_version='2.14.1'
+        }
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
     implementation"org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
@@ -42,8 +45,14 @@ dependencies {
     implementation 'io.reactivex:rxjava:1.1.6'
 
     //Dagger2
-    implementation 'com.google.dagger:dagger:2.5'
-    annotationProcessor 'com.google.dagger:dagger-compiler:2.5'
+    // dagger
+    kapt "com.google.dagger:dagger-compiler:$dagger_version"
+    implementation "com.google.dagger:dagger:$dagger_version"
+
+    // dagger android
+    kapt "com.google.dagger:dagger-android-processor:$dagger_version"
+
+    implementation "com.google.dagger:dagger-android-support:$dagger_version"
 
     testImplementation 'junit:junit:4.12'
     androidTestImplementation 'com.android.support.test:runner:1.0.2'

@@ -9,6 +9,7 @@ import rx.Subscription;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
 
+import javax.inject.Inject;
 import java.io.File;
 
 public class ServiceUtil {
@@ -16,19 +17,20 @@ public class ServiceUtil {
 
     final OCRServiceInterface ocrServiceInterface;
 
+    @Inject
     public ServiceUtil(OCRServiceInterface ocrServiceInterface
     ) {
         this.ocrServiceInterface = ocrServiceInterface;
 
     }
 
-    public Subscription getImageText(final GetTextCallback getTextCallback, String langauge, final String getText, String outFormat,File file) {
+    public Subscription getImageText(final GetTextCallback getTextCallback, String langauge, final String getText, String outFormat, File file) {
 
         RequestBody requestFile = RequestBody.create(MediaType.parse("multipart/form-data"), file);
 
-        MultipartBody.Part multipartBody =MultipartBody.Part.createFormData("file",file.getName(),requestFile);
+        MultipartBody.Part multipartBody = MultipartBody.Part.createFormData("file", file.getName(), requestFile);
 
-        return ocrServiceInterface.processImage("english", "true", "doc",multipartBody)
+        return ocrServiceInterface.processImage("english", "true", "doc", multipartBody)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(new Subscriber<ImageTextResponse>() {
