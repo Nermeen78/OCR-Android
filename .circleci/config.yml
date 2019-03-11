@@ -10,8 +10,8 @@ jobs:
 
     steps:
       - checkout
-   
-     - restore_cache:
+      
+      - restore_cache:
         key: jars-{{ checksum "build.gradle" }}-{{ checksum  "app/build.gradle" }}
       
       - run:
