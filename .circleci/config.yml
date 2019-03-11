@@ -2,8 +2,6 @@ version: 2
 
 jobs:
   build:
- 
-    build_dir: /android/
     working_directory: ~/OCRAppAndroid/app
     docker:
       - image: circleci/android:api-25-alpha
