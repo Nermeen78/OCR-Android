@@ -31,7 +31,6 @@ public class NetworkModule {
     {
         OkHttpClient okHttpClient = new OkHttpClient.Builder()
                 .addInterceptor(new Interceptor() {
-                    @RequiresApi(api = Build.VERSION_CODES.O)
                     @Override
                     public Response intercept(Chain chain) throws IOException {
                         Request original = chain.request();
