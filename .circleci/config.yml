@@ -1,7 +1,7 @@
 version: 2
 jobs:
   build:
-    working_directory: ~/OCRAppAndroid/app
+    working_directory: ~/OCRAppAndroid
     docker:
       - image: circleci/android:api-25-alpha
     environment:
@@ -16,9 +16,7 @@ jobs:
 #         command: sudo chmod +x ./gradlew
       - run:
           name: Download Dependencies
-          command: |
-            sudo chmod +x gradlew
-            ./gradlew androidDependencies 
+          command:./gradlew androidDependencies 
       - save_cache:
           paths:
             - ~/.gradle
