@@ -16,8 +16,10 @@ import android.graphics.Bitmap
 import android.app.Activity
 import android.content.Context
 import android.content.pm.PackageManager
+import android.os.Environment
 import android.support.v4.app.ActivityCompat
 import android.support.v4.content.ContextCompat
+import com.googlecode.tesseract.android.TessBaseAPI
 import ocr.codeyourlife.com.ocrapp_android.di.DaggerOCRComponent
 import ocr.codeyourlife.com.ocrapp_android.model.ImageTextResponse
 import ocr.codeyourlife.com.ocrapp_android.service.ServiceUtil
@@ -35,7 +37,7 @@ class MainActivity : AppCompatActivity(), MainView {
     var captureMediaFile: File? = null
     var bytesDocumentsTypePicture: ByteArray? = null
     @Inject
-    lateinit  var service: ServiceUtil ;
+    lateinit var service: ServiceUtil;
 
     override fun onResult() {
         TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
@@ -49,7 +51,7 @@ class MainActivity : AppCompatActivity(), MainView {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
-   DaggerOCRComponent.builder().build().inject(this);
+        DaggerOCRComponent.builder().build().inject(this);
 
         imageButton.setOnClickListener(View.OnClickListener {
             val myAlertDialog = AlertDialog.Builder(this)
@@ -110,23 +112,31 @@ class MainActivity : AppCompatActivity(), MainView {
 
             val photo = data!!.getExtras().get("data") as Bitmap
             imageButton.setImageBitmap(photo)
-            val subscription = service.getImageText(object : ServiceUtil.GetTextCallback {
-                override fun onSuccess(imageTextResponse: ImageTextResponse) {
-                   textView.setText("The image text:"+imageTextResponse.ocrText)
-                }
+//            val subscription = service.getImageText(object : ServiceUtil.GetTextCallback {
+//                override fun onSuccess(imageTextResponse: ImageTextResponse) {
+//                   textView.setText("The image text:"+imageTextResponse.ocrText)
+//                }
+//
+//                override fun onError(networkError: Throwable) {
+//                    textView.setText("NetworkError:"+networkError.message)
+//                }
+//
+//            },"","","",
+//                bitmapToFile(photo))
 
-                override fun onError(networkError: Throwable) {
-                    textView.setText("NetworkError:"+networkError.message)
-                }
-
-            },"","","",
-                bitmapToFile(photo))
-
-          //  subscriptions.add(subscription)
+            //  subscriptions.add(subscription)
         } else if (resultCode === Activity.RESULT_OK && requestCode === GALLERY_PICTURE) {
 
             val bitmap = MediaStore.Images.Media.getBitmap(contentResolver, data!!.data)
             imageButton.setImageBitmap(bitmap)
+            val myDir = getExternalFilesDir(Environment.MEDIA_MOUNTED);
+            val api: TessBaseAPI = TessBaseAPI()
+            api.init(myDir.toString(), "eng")
+            api.setImage(bitmap)
+            val s: String = api.utF8Text
+            textView.setText("Text:"+s)
+            api.end()
+
         } else {
             Toast.makeText(applicationContext, " some_error_while_uploading  ", Toast.LENGTH_SHORT).show()
         }
@@ -159,6 +169,7 @@ class MainActivity : AppCompatActivity(), MainView {
 
         }
     }
+
     fun bitmapToFile(bmp: Bitmap): File? {
         try {
 

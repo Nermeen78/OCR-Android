@@ -2,6 +2,7 @@ package ocr.codeyourlife.com.ocrapp_android.service;
 
 import android.os.Build;
 
+import android.support.annotation.RequiresApi;
 import dagger.Module;
 
 import dagger.Provides;
@@ -27,8 +28,7 @@ public class NetworkModule {
 
     @Provides
     @Singleton
-    Retrofit provideRetrofit()
-    {
+    Retrofit provideRetrofit() {
         OkHttpClient okHttpClient = new OkHttpClient.Builder()
                 .addInterceptor(new Interceptor() {
                     @Override
@@ -39,12 +39,12 @@ public class NetworkModule {
 
                         Request request = original.newBuilder()
                                 .header("Content-Type", "application/json")
-                                .removeHeader("Pragma")
-                            //    .header("Authorization","Basic " + Base64.getEncoder().encodeToString(("NERMEEN" + ":" + "462339B0-2028-4AF8-82E6-0160FE9CE5D2").getBytes()))
+                               // .removeHeader("Pragma")
+                                .header("Authorization","Basic "+"TkVSTUVFTjo0NjIzMzlCMC0yMDI4LTRBRjgtODJFNi0wMTYwRkU5Q0U1RDI=")
                                 .build();
 
                         Response response = chain.proceed(request);
-                       // response.cacheResponse();
+                        // response.cacheResponse();
                         // Customize or return the response
                         return response;
                     }
@@ -55,7 +55,7 @@ public class NetworkModule {
         return new Retrofit.Builder()
                 .baseUrl(BuildConfig.BASEURL)
                 .client(okHttpClient)
-                .addConverterFactory( GsonConverterFactory.create())
+                .addConverterFactory(GsonConverterFactory.create())
                 .addCallAdapterFactory(RxJavaCallAdapterFactory.create())
                 .build();
 
@@ -68,6 +68,7 @@ public class NetworkModule {
             Retrofit retrofit) {
         return retrofit.create(OCRServiceInterface.class);
     }
+
 
 
 }
