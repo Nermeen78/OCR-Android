@@ -19,7 +19,7 @@ import android.content.pm.PackageManager
 import android.os.Environment
 import android.support.v4.app.ActivityCompat
 import android.support.v4.content.ContextCompat
-import com.googlecode.tesseract.android.TessBaseAPI
+import android.util.Log
 import ocr.codeyourlife.com.ocrapp_android.di.DaggerOCRComponent
 import ocr.codeyourlife.com.ocrapp_android.model.ImageTextResponse
 import ocr.codeyourlife.com.ocrapp_android.service.ServiceUtil
@@ -54,56 +54,73 @@ class MainActivity : AppCompatActivity(), MainView {
         DaggerOCRComponent.builder().build().inject(this);
 
         imageButton.setOnClickListener(View.OnClickListener {
-            val myAlertDialog = AlertDialog.Builder(this)
-            myAlertDialog.setTitle("Upload Pictures Option")
-            myAlertDialog.setMessage("How do you want to set your picture?")
 
-            myAlertDialog.setPositiveButton("Gallery", DialogInterface.OnClickListener { arg0, arg1 ->
-                val intent = Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI)
-                startActivityForResult(intent, GALLERY_PICTURE)
-            })
-
-            myAlertDialog.setNegativeButton("Camera", DialogInterface.OnClickListener { arg0, arg1 ->
-
-                if (ContextCompat.checkSelfPermission(
-                        this,
-                        Manifest.permission.CAMERA
-                    )
-                    != PackageManager.PERMISSION_GRANTED
-                ) {
-
-                    // Permission is not granted
-                    // Should we show an explanation?
-                    if (ActivityCompat.shouldShowRequestPermissionRationale(
-                            this,
-                            Manifest.permission.CAMERA
-                        )
-                    ) {
-                        // Show an explanation to the user *asynchronously* -- don't block
-                        // this thread waiting for the user's response! After the user
-                        // sees the explanation, try again to request the permission.
-                    } else {
-                        // No explanation needed, we can request the permission.
-                        ActivityCompat.requestPermissions(
-                            this,
-                            arrayOf(Manifest.permission.CAMERA),
-                            CAMERA_PERMISSION
-                        )
-
-                        // MY_PERMISSIONS_REQUEST_READ_CONTACTS is an
-                        // app-defined int constant. The callback method gets the
-                        // result of the request.
-                    }
-                } else {
-                    // Permission has already been granted
-
-                    val cameraIntent = Intent(android.provider.MediaStore.ACTION_IMAGE_CAPTURE)
-                    startActivityForResult(cameraIntent, CAMERA_REQUEST)
+            val subscription = service.getImageText(object : ServiceUtil.GetTextCallback {
+                override fun onSuccess(imageTextResponse: ImageTextResponse) {
+                    textView.setText("The image text:"+"Done")//+imageTextResponse.parsedResults[0].parsedText)
                 }
 
-            })
-            myAlertDialog.show()
+                override fun onError(networkError: Throwable) {
+                    networkError.printStackTrace()
+                    textView.setText("NetworkError:"+networkError.message)
+
+                }
+
+            },"","","",
+                File(""))
         })
+//        imageButton.setOnClickListener(View.OnClickListener {
+//            val myAlertDialog = AlertDialog.Builder(this)
+//            myAlertDialog.setTitle("Upload Pictures Option")
+//            myAlertDialog.setMessage("How do you want to set your picture?")
+//
+//            myAlertDialog.setPositiveButton("Gallery", DialogInterface.OnClickListener { arg0, arg1 ->
+//                val intent = Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI)
+//                startActivityForResult(intent, GALLERY_PICTURE)
+//            })
+//
+//            myAlertDialog.setNegativeButton("Camera", DialogInterface.OnClickListener { arg0, arg1 ->
+//
+//                if (ContextCompat.checkSelfPermission(
+//                        this,
+//                        Manifest.permission.CAMERA
+//                    )
+//                    != PackageManager.PERMISSION_GRANTED
+//                ) {
+//
+//                    // Permission is not granted
+//                    // Should we show an explanation?
+//                    if (ActivityCompat.shouldShowRequestPermissionRationale(
+//                            this,
+//                            Manifest.permission.CAMERA
+//                        )
+//                    ) {
+//                        // Show an explanation to the user *asynchronously* -- don't block
+//                        // this thread waiting for the user's response! After the user
+//                        // sees the explanation, try again to request the permission.
+//                    } else {
+//                        // No explanation needed, we can request the permission.
+//                        ActivityCompat.requestPermissions(
+//                            this,
+//                            arrayOf(Manifest.permission.CAMERA),
+//                            CAMERA_PERMISSION
+//                        )
+//
+//                        // MY_PERMISSIONS_REQUEST_READ_CONTACTS is an
+//                        // app-defined int constant. The callback method gets the
+//                        // result of the request.
+//                    }
+//                } else {
+//                    // Permission has already been granted
+//
+//                    val cameraIntent = Intent(android.provider.MediaStore.ACTION_IMAGE_CAPTURE)
+//                    startActivityForResult(cameraIntent, CAMERA_REQUEST)
+//
+//                }
+//
+//            })
+//            myAlertDialog.show()
+//        })
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
@@ -112,31 +129,37 @@ class MainActivity : AppCompatActivity(), MainView {
 
             val photo = data!!.getExtras().get("data") as Bitmap
             imageButton.setImageBitmap(photo)
-//            val subscription = service.getImageText(object : ServiceUtil.GetTextCallback {
-//                override fun onSuccess(imageTextResponse: ImageTextResponse) {
-//                   textView.setText("The image text:"+imageTextResponse.ocrText)
-//                }
-//
-//                override fun onError(networkError: Throwable) {
-//                    textView.setText("NetworkError:"+networkError.message)
-//                }
-//
-//            },"","","",
-//                bitmapToFile(photo))
+            val subscription = service.getImageText(object : ServiceUtil.GetTextCallback {
+                override fun onSuccess(imageTextResponse: ImageTextResponse) {
+                   textView.setText("The image text:"+imageTextResponse.parsedResults[0].parsedText)
+                }
+
+                override fun onError(networkError: Throwable) {
+                    textView.setText("NetworkError:"+networkError.message)
+                }
+
+            },"","","",
+                bitmapToFile(photo))
 
             //  subscriptions.add(subscription)
         } else if (resultCode === Activity.RESULT_OK && requestCode === GALLERY_PICTURE) {
 
             val bitmap = MediaStore.Images.Media.getBitmap(contentResolver, data!!.data)
             imageButton.setImageBitmap(bitmap)
-            val myDir = getExternalFilesDir(Environment.MEDIA_MOUNTED);
-            val api: TessBaseAPI = TessBaseAPI()
-            api.init(myDir.toString(), "eng")
-            api.setImage(bitmap)
-            val s: String = api.utF8Text
-            textView.setText("Text:"+s)
-            api.end()
 
+            val subscription = service.getImageText(object : ServiceUtil.GetTextCallback {
+                override fun onSuccess(imageTextResponse: ImageTextResponse) {
+                    textView.setText("The image text:"+"Done")//+imageTextResponse.parsedResults[0].parsedText)
+                }
+
+                override fun onError(networkError: Throwable) {
+                    networkError.printStackTrace()
+                    textView.setText("NetworkError:"+networkError.message)
+
+                }
+
+            },"","","",
+                bitmapToFile(bitmap))
         } else {
             Toast.makeText(applicationContext, " some_error_while_uploading  ", Toast.LENGTH_SHORT).show()
         }
@@ -179,7 +202,7 @@ class MainActivity : AppCompatActivity(), MainView {
             bos.flush()
             bos.close()
 
-            val fos = openFileOutput("mdroid.png", Context.MODE_WORLD_WRITEABLE)
+            val fos = openFileOutput("mdroid.png", Context.MODE_PRIVATE)
             fos.write(bArr)
             fos.flush()
             fos.close()

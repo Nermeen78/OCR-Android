@@ -1,84 +1,64 @@
 package ocr.codeyourlife.com.ocrapp_android.model;
+import java.util.ArrayList;
 import java.util.List;
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 public class ImageTextResponse {
-        @SerializedName("ErrorMessage")
-        @Expose
-        private String errorMessage;
-        @SerializedName("AvailablePages")
-        @Expose
-        private int availablePages;
-        @SerializedName("ProcessedPages")
-        @Expose
-        private int processedPages;
-        @SerializedName("OCRText")
-        @Expose
-        private List<List<String>> oCRText = null;
-        @SerializedName("OutputFileUrl")
-        @Expose
-        private String outputFileUrl;
-        @SerializedName("TaskDescription")
-        @Expose
-        private String taskDescription;
-        @SerializedName("Reserved")
-        @Expose
-        private List<Object> reserved = null;
+    @SerializedName("ParsedResults")
+    @Expose
+    private List<ParsedResult> parsedResults = new ArrayList<>();
+    @SerializedName("OCRExitCode")
+    @Expose
+    private int oCRExitCode;
+    @SerializedName("IsErroredOnProcessing")
+    @Expose
+    private boolean isErroredOnProcessing;
+    @SerializedName("ProcessingTimeInMilliseconds")
+    @Expose
+    private String processingTimeInMilliseconds;
+    @SerializedName("SearchablePDFURL")
+    @Expose
+    private String searchablePDFURL;
 
-        public String getErrorMessage() {
-            return errorMessage;
-        }
+    public List<ParsedResult> getParsedResults() {
+        return parsedResults;
+    }
 
-        public void setErrorMessage(String errorMessage) {
-            this.errorMessage = errorMessage;
-        }
+    public void setParsedResults(List<ParsedResult> parsedResults) {
+        this.parsedResults = parsedResults;
+    }
 
-        public int getAvailablePages() {
-            return availablePages;
-        }
+    public int getOCRExitCode() {
+        return oCRExitCode;
+    }
 
-        public void setAvailablePages(int availablePages) {
-            this.availablePages = availablePages;
-        }
+    public void setOCRExitCode(int oCRExitCode) {
+        this.oCRExitCode = oCRExitCode;
+    }
 
-        public int getProcessedPages() {
-            return processedPages;
-        }
+    public boolean isIsErroredOnProcessing() {
+        return isErroredOnProcessing;
+    }
 
-        public void setProcessedPages(int processedPages) {
-            this.processedPages = processedPages;
-        }
+    public void setIsErroredOnProcessing(boolean isErroredOnProcessing) {
+        this.isErroredOnProcessing = isErroredOnProcessing;
+    }
 
-        public List<List<String>> getOCRText() {
-            return oCRText;
-        }
+    public String getProcessingTimeInMilliseconds() {
+        return processingTimeInMilliseconds;
+    }
 
-        public void setOCRText(List<List<String>> oCRText) {
-            this.oCRText = oCRText;
-        }
+    public void setProcessingTimeInMilliseconds(String processingTimeInMilliseconds) {
+        this.processingTimeInMilliseconds = processingTimeInMilliseconds;
+    }
 
-        public String getOutputFileUrl() {
-            return outputFileUrl;
-        }
+    public String getSearchablePDFURL() {
+        return searchablePDFURL;
+    }
 
-        public void setOutputFileUrl(String outputFileUrl) {
-            this.outputFileUrl = outputFileUrl;
-        }
+    public void setSearchablePDFURL(String searchablePDFURL) {
+        this.searchablePDFURL = searchablePDFURL;
+    }
 
-        public String getTaskDescription() {
-            return taskDescription;
-        }
-
-        public void setTaskDescription(String taskDescription) {
-            this.taskDescription = taskDescription;
-        }
-
-        public List<Object> getReserved() {
-            return reserved;
-        }
-
-        public void setReserved(List<Object> reserved) {
-            this.reserved = reserved;
-        }
 
 }
